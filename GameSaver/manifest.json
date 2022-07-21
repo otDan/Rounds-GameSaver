@@ -1,0 +1,12 @@
+{
+  "name": "GameSaver",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/otDan/GameSaver",
+  "description": "Saves your current game and lets you come back to it whenever you want.",
+  "dependencies": [
+    "BepInEx-BepInExPack_ROUNDS-5.4.1900",
+    "willis81808-UnboundLib-3.1.2",
+    "willis81808-MMHook-1.0.0",
+    "olavim-RoundsWithFriends-2.2.1"
+  ]
+}
