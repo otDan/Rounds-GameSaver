@@ -73,7 +73,7 @@ namespace GameSaver.Menu
             _linksUi = GameObject.Find("Links(Clone)");
             _pingUi = GameObject.Find("UIHolder");
             _codeUi = GameObject.Find("LobbyImprovementsBG");
-            _timerUi = GameObject.Find("TimerUI");
+            _timerUi = GameObject.Find("TimerLobbyUI");
             _linksUi?.gameObject.SetActive(false);
             _pingUi?.gameObject.SetActive(false);
             _codeUi?.gameObject.SetActive(false);

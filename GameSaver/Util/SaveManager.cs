@@ -95,13 +95,12 @@ namespace GameSaver.Util
         internal static IEnumerator LoadSave()
         {
             if (_selectedSave == null) yield break;
-            GameSaver.Instance.Log($"Loading save...");
+            // GameSaver.Instance.Log($"Loading save...");
             _round = _selectedSave.round;
-            GameSaver.Instance.Log($"Round set to {_round}");
-            GameModeManager.CurrentHandler.ChangeSetting("roundsToWinGame", _selectedSave.pointsToWin);
-            GameSaver.Instance.Log($"Rounds to win game set to {_selectedSave.pointsToWin}");
-            GameModeManager.CurrentHandler.ChangeSetting("pointsToWinRound", _selectedSave.pointsToWinRound);
-            GameSaver.Instance.Log($"Points to win round set to {_selectedSave.pointsToWinRound}\n");
+            // GameSaver.Instance.Log($"Round set to {_round}");
+            
+            // GameSaver.Instance.Log($"Rounds to win game set to {_selectedSave.pointsToWin}");
+            // GameSaver.Instance.Log($"Points to win round set to {_selectedSave.pointsToWinRound}\n");
             foreach (var playerData in _selectedSave.players)
             {
                 // var player = SteamManager.GetPlayerFromSteamId(playerData.steamId);
@@ -109,30 +108,43 @@ namespace GameSaver.Util
                 var player = PlayerManager.instance.players.Find(loopPlayer => PhotonNetwork.CurrentRoom.GetPlayer(loopPlayer.data.view.OwnerActorNr).NickName == playerData.name);
                 if (player == null) continue;
 
-                GameSaver.Instance.Log($"Loading player {PhotonNetwork.CurrentRoom.GetPlayer(player.data.view.OwnerActorNr).NickName}");
+                // GameSaver.Instance.Log($"Loading player {PhotonNetwork.CurrentRoom.GetPlayer(player.data.view.OwnerActorNr).NickName}");
                 var cards = playerData.cards;
                 var floatArray = Enumerable.Repeat(2f, cards.Count).ToArray();
                 ModdingUtils.Utils.Cards.instance.AddCardsToPlayer(player, cards.ToArray(), true, Enumerable.Repeat("", cards.Count).ToArray(), floatArray, floatArray, true);
-                GameSaver.Instance.Log($"Added cards {cards.ToArray()}");
+                // GameSaver.Instance.Log($"Added cards {cards.ToArray()}");
                 GameModeManager.CurrentHandler.SetTeamScore(player.teamID, new TeamScore(playerData.points, playerData.rounds));
-                GameSaver.Instance.Log($"Set team points to {playerData.rounds} rounds and {playerData.points} points");
-                
+                // GameSaver.Instance.Log($"Set team points to {playerData.rounds} rounds and {playerData.points} points");
+                ShareSaveTeamSettings(player.teamID, playerData.points, playerData.rounds);
                 yield return null;
             }
-
+            
+            ShareSaveGameSettings(_selectedSave.pointsToWin, _selectedSave.pointsToWinRound);
             _selectedSave = null;
-            GameSaver.Instance.Log($"Save loaded!");
+            // GameSaver.Instance.Log($"Save loaded!");
         }
 
-        public static void ShareSaveSettings(int teamId, int points, int rounds)
+        public static void ShareSaveTeamSettings(int teamId, int points, int rounds)
         {
-            NetworkingManager.RPC_Others(typeof(SaveManager), nameof(LoadSaveSettings), teamId, points, rounds);
+            NetworkingManager.RPC_Others(typeof(SaveManager), nameof(LoadSaveTeamSettings), teamId, points, rounds);
+        }
+
+        public static void ShareSaveGameSettings(int pointsToWin, int pointsToWinRound)
+        {
+            NetworkingManager.RPC_Others(typeof(SaveManager), nameof(LoadSaveGameSettings), pointsToWin, pointsToWinRound);
         }
 
         [UnboundRPC]
-        private static void LoadSaveSettings(int teamId, int points, int rounds)
+        private static void LoadSaveTeamSettings(int teamId, int points, int rounds)
         {
             GameModeManager.CurrentHandler.SetTeamScore(teamId, new TeamScore(points, rounds));
+        }
+
+        [UnboundRPC]
+        private static void LoadSaveGameSettings(int pointsToWin, int pointsToWinRound)
+        {
+            GameModeManager.CurrentHandler.ChangeSetting("roundsToWinGame", pointsToWin);
+            GameModeManager.CurrentHandler.ChangeSetting("pointsToWinRound", pointsToWinRound);
         }
 
         internal static IEnumerator GameStart(IGameModeHandler gm)

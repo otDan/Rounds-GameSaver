@@ -65,20 +65,11 @@ if($Target.Equals("Release")) {
 
     Remove-Item -Path "$package\Thunderstore\$name.$Version.zip" -Force
 
-    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore\$name.$Version.zip"
+    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore\$name.zip"
     $thunder.Delete($true)
 
-#    $arr = Get-ChildItem $ProjectPath\Cards |
-#            select FullName
-#    foreach($let in $arr) {
-#        #$tex = Get-Content -Path $let
-#        Write-Host $let
-#    }
-}
-
-if($Target.Equals("Release")) {
     $package = "$ProjectPath\release"
-    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$package\$name.$Version.dll"
+    Copy-Item -Path "$TargetPath\$name.dll" -Destination "$package\$name.dll"
 }
 
 Pop-Location

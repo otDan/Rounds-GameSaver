@@ -132,7 +132,6 @@
     <EmbeddedResource Include="Asset\gamesaver_assets" />
     <None Include="manifest.json" />
     <None Include="README.md" />
-    <None Include="Thunderstore\manifest.json" />
     <None Include="publish.ps1" />
   </ItemGroup>
   <ItemGroup />
