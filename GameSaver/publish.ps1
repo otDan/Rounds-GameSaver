@@ -54,8 +54,8 @@ if($Target.Equals("Release")) {
     $thunder.CreateSubdirectory('plugins')
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$PluginFolder"
     Copy-Item -Path "$TargetPath\$name.dll" -Destination "$thunder\plugins\"
-    Copy-Item -Path "$ThunderStoreFolder\README.md" -Destination "$thunder\README.md"
-    Copy-Item -Path "$ThunderStoreFolder\manifest.json" -Destination "$thunder\manifest.json"
+    Copy-Item -Path "$ProjectPath\README.md" -Destination "$thunder\README.md"
+    Copy-Item -Path "$ProjectPath\manifest.json" -Destination "$thunder\manifest.json"
     Copy-Item -Path "$ThunderStoreFolder\icon.png" -Destination "$thunder\icon.png"
 
     ((Get-Content -path "$thunder\manifest.json" -Raw) -replace "#VERSION#", "$Version") | Set-Content -Path "$thunder\manifest.json"

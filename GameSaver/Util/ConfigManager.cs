@@ -7,7 +7,7 @@ using BepInEx.Configuration;
 
 namespace GameSaver.Util
 {
-    internal class ConfigController
+    internal class ConfigManager
     {
         public static ConfigEntry<bool> SaveEnabledConfig;
         public static ConfigEntry<bool> SaveAsHostEnabledConfig;

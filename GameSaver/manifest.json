@@ -1,6 +1,6 @@
 {
   "name": "GameSaver",
-  "version_number": "1.0.0",
+  "version_number": "1.0.1",
   "website_url": "https://github.com/otDan/GameSaver",
   "description": "Saves your current game and lets you come back to it whenever you want.",
   "dependencies": [

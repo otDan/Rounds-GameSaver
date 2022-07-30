@@ -72,6 +72,9 @@
     <Reference Include="PickNCards">
       <HintPath>C:\Users\ostas\AppData\Roaming\r2modmanPlus-local\ROUNDS\profiles\MyModdedTesting\BepInEx\plugins\Pykess-Pick_N_Cards\PickNCards.dll</HintPath>
     </Reference>
+    <Reference Include="RoundsWithFriends">
+      <HintPath>C:\Users\ostas\AppData\Roaming\r2modmanPlus-local\ROUNDS\profiles\MyModdedTesting\BepInEx\plugins\olavim-RoundsWithFriends\RoundsWithFriends.dll</HintPath>
+    </Reference>
     <Reference Include="SonigonAudioEngine.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\ROUNDS\Rounds_Data\Managed\SonigonAudioEngine.Runtime.dll</HintPath>
@@ -115,19 +118,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Asset\AssetManager.cs" />
+    <Compile Include="Component\CustomScrollRect.cs" />
     <Compile Include="GameSaver.cs" />
+    <Compile Include="Menu\SaveLoadMenu.cs" />
+    <Compile Include="Component\CardDisplayMono.cs" />
+    <Compile Include="Network\LobbyMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\ConfigController.cs" />
-    <Compile Include="Util\SaveHandler.cs" />
+    <Compile Include="Util\ConfigManager.cs" />
+    <Compile Include="Util\SaveManager.cs" />
+    <Compile Include="Util\SteamManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="publish.ps1" />
+    <EmbeddedResource Include="Asset\gamesaver_assets" />
     <None Include="manifest.json" />
     <None Include="README.md" />
+    <None Include="Thunderstore\manifest.json" />
+    <None Include="publish.ps1" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Network\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -1,14 +1,18 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
+using GameSaver.Network;
 using GameSaver.Util;
 using HarmonyLib;
+using UnboundLib;
 using UnboundLib.GameModes;
+using UnboundLib.Networking;
 
 namespace GameSaver
 {
     [BepInDependency("com.willis.rounds.unbound")]
     [BepInDependency("pykess.rounds.plugins.moddingutils")]
     [BepInDependency("io.olavim.rounds.rwf")]
-    [BepInPlugin(ModId, ModName, Version)]
+    [BepInPlugin(ModId, CompatibilityModName, Version)]
     [BepInProcess("Rounds.exe")]
     public class GameSaver : BaseUnityPlugin
     {
@@ -18,27 +22,30 @@ namespace GameSaver
         public const string ModInitials = "";
         private const string CompatibilityModName = "GameSaver";
         public static GameSaver Instance { get; private set; }
-        private const bool DEBUG = true;
+        private const bool DEBUG = false;
 
         private void Awake()
         {
             Instance = this;
-            
+
             var harmony = new Harmony(ModId);
             harmony.PatchAll();
+
+            SaveManager.Initialize();
         }
 
         private void Start()
         {
-            GameModeManager.AddHook(GameModeHooks.HookGameStart, SaveHandler.GameStart);
-            GameModeManager.AddHook(GameModeHooks.HookRoundEnd, SaveHandler.RoundCounter);
-            GameModeManager.AddHook(GameModeHooks.HookPickStart, SaveHandler.PickStart);
-            GameModeManager.AddHook(GameModeHooks.HookPickEnd, SaveHandler.PickEnd);
+            GameModeManager.AddHook(GameModeHooks.HookGameStart, SaveManager.GameStart);
+            GameModeManager.AddHook(GameModeHooks.HookRoundEnd, SaveManager.RoundCounter);
+            GameModeManager.AddHook(GameModeHooks.HookPickStart, SaveManager.PickStart);
+            // GameModeManager.AddHook(GameModeHooks.HookPickEnd, SaveHandler.PickEnd);
+            gameObject.AddComponent<LobbyMonitor>();
         }
 
         public void Log(string debug)
         {
-            if (DEBUG) UnityEngine.Debug.Log(debug);
+            if (DEBUG) Logger.LogInfo(debug);
         }
     }
 }
