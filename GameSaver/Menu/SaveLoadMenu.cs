@@ -177,10 +177,10 @@ namespace GameSaver.Menu
                                         GameObject pointObject = Instantiate(AssetManager.Point, pointContainer.transform);
                                         Image image = pointObject.GetComponentInChildren<Image>();
                                         image.color = playerData.color.color;
-
-                                        if (i == playerData.rounds + 1)
+                                        
+                                        if (i == playerData.rounds)
                                         {
-                                            var fillAmount = playerData.points == 0 ? 0 : playerData.points / saveData.pointsToWinRound;
+                                            var fillAmount = playerData.points == 0 ? 0 : (float) playerData.points / saveData.pointsToWinRound;
                                             if (fillAmount <= 0)
                                             {
                                                 image.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(5, 5);
@@ -191,7 +191,7 @@ namespace GameSaver.Menu
                                                 image.fillAmount = fillAmount;
                                             }
                                         }
-                                        else if (i >= playerData.rounds)
+                                        else if (i > playerData.rounds)
                                         {
                                             image.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(5, 5);
                                             image.color = Color.gray;

@@ -39,7 +39,7 @@ namespace GameSaver
             GameModeManager.AddHook(GameModeHooks.HookGameStart, SaveManager.GameStart);
             GameModeManager.AddHook(GameModeHooks.HookRoundEnd, SaveManager.RoundCounter);
             GameModeManager.AddHook(GameModeHooks.HookPickStart, SaveManager.PickStart);
-            // GameModeManager.AddHook(GameModeHooks.HookPickEnd, SaveHandler.PickEnd);
+            GameModeManager.AddHook(GameModeHooks.HookPickEnd, SaveManager.PickEnd);
             gameObject.AddComponent<LobbyMonitor>();
         }
 

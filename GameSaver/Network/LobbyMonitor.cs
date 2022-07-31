@@ -36,9 +36,7 @@ namespace GameSaver.Network
             if (!_enabled) return;
         }
 
-        public override void OnCreatedRoom()
-        {
-        }
+        public override void OnCreatedRoom() { }
 
         public override void OnJoinedRoom()
         {
