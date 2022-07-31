@@ -10,6 +10,8 @@
 Tired of people leaving and having your games crash? This is the solution for you.
 
 ## Versions
+- 1.0.2
+  - Fix point display in the menu
 - 1.0.1
   - Fix points to win round not being synced
 - 1.0.0
