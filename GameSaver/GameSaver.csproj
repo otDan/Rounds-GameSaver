@@ -90,6 +90,10 @@
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\ROUNDS\Rounds_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\ROUNDS\Rounds_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\ROUNDS\Rounds_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
@@ -118,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Asset\AssetManager.cs" />
+    <Compile Include="Component\AutoHide.cs" />
     <Compile Include="Component\CustomScrollRect.cs" />
     <Compile Include="GameSaver.cs" />
     <Compile Include="Menu\SaveLoadMenu.cs" />

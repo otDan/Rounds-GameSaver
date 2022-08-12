@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnboundLib;
+﻿using UnboundLib;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace GameSaver.Mono
+namespace GameSaver.Component
 {
     internal class CardDisplayMono : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
@@ -36,7 +31,7 @@ namespace GameSaver.Mono
                 if (_cardPreview == null) return;
                 _cardPreview.transform.localScale = Vector3.one * 0.5f;
                 int y = 4;
-                if (eventData.position.y > Screen.height/2 ) y = -5;
+                if (eventData.position.y > (float) Screen.height / 2) y = -5;
                 _cardPreview.transform.position = transform.position + new Vector3(4, y);
             });
         }

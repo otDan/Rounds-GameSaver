@@ -63,9 +63,9 @@ if($Target.Equals("Release")) {
     $website = "https://github.com/otDan/" + "$name"
     ((Get-Content -path "$thunder\manifest.json" -Raw) -replace "#WEBSITE_URL#", "$website") | Set-Content -Path "$thunder\manifest.json"
 
-    Remove-Item -Path "$package\Thunderstore\$name.$Version.zip" -Force
+    #Remove-Item -Path "$package\Thunderstore\$name.zip" -Force
 
-    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore\$name.zip"
+    Compress-Archive -Path "$thunder\*" -DestinationPath "$package\Thunderstore\$name.zip" -Force
     $thunder.Delete($true)
 
     $package = "$ProjectPath\release"

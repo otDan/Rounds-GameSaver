@@ -1,11 +1,8 @@
-﻿using System;
-using BepInEx;
+﻿using BepInEx;
 using GameSaver.Network;
 using GameSaver.Util;
 using HarmonyLib;
-using UnboundLib;
 using UnboundLib.GameModes;
-using UnboundLib.Networking;
 
 namespace GameSaver
 {
@@ -18,7 +15,7 @@ namespace GameSaver
     {
         private const string ModId = "ot.dan.rounds.gamesaver";
         private const string ModName = "Game Saver";
-        public const string Version = "1.0.2";
+        public const string Version = "1.0.3";
         public const string ModInitials = "";
         private const string CompatibilityModName = "GameSaver";
         public static GameSaver Instance { get; private set; }
@@ -37,9 +34,12 @@ namespace GameSaver
         private void Start()
         {
             GameModeManager.AddHook(GameModeHooks.HookGameStart, SaveManager.GameStart);
+            GameModeManager.AddHook(GameModeHooks.HookGameEnd, SaveManager.GameEnd);
             GameModeManager.AddHook(GameModeHooks.HookRoundEnd, SaveManager.RoundCounter);
             GameModeManager.AddHook(GameModeHooks.HookPickStart, SaveManager.PickStart);
             GameModeManager.AddHook(GameModeHooks.HookPickEnd, SaveManager.PickEnd);
+
+            GameModeManager.AddHook(GameModeHooks.HookPlayerPickStart, SaveManager.PlayerPickStart);
             gameObject.AddComponent<LobbyMonitor>();
         }
 

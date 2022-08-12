@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI.ProceduralImage;
 
 namespace GameSaver.Asset
 {
@@ -7,6 +6,7 @@ namespace GameSaver.Asset
     {
         private static readonly AssetBundle GameSaverAssetsBundle = Jotunn.Utils.AssetUtils.LoadAssetBundleFromResources("gamesaver_assets", typeof(GameSaver).Assembly);
 
+        public static readonly GameObject Saving = GameSaverAssetsBundle.LoadAsset<GameObject>("Saving");
         public static readonly GameObject ElementSection = GameSaverAssetsBundle.LoadAsset<GameObject>("ElementSection");
         public static readonly GameObject Section = GameSaverAssetsBundle.LoadAsset<GameObject>("Section");
         public static readonly GameObject SaveInfo = GameSaverAssetsBundle.LoadAsset<GameObject>("SaveInfo");
