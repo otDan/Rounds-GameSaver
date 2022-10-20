@@ -110,7 +110,7 @@ namespace GameSaver.Network
             var text = textGo.AddComponent<TextMeshProUGUI>();
             text.text = str;
             text.color = new Color32(230, 230, 230, 255);
-            text.font = MenuFont;
+            text.font = menuFont;
             text.fontSize = 60;
             text.fontWeight = FontWeight.Regular;
             text.alignment = TextAlignmentOptions.Center;
@@ -120,7 +120,7 @@ namespace GameSaver.Network
         }
 
         private static TMP_FontAsset _menuFont;
-        public static TMP_FontAsset MenuFont
+        public static TMP_FontAsset menuFont
         {
             get
             {

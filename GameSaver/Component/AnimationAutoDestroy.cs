@@ -2,7 +2,7 @@
 
 namespace GameSaver.Component
 {
-    public class AutoHide : MonoBehaviour
+    public class AnimationAutoDestroy : MonoBehaviour
     {
         private Animator _animator;
         private int _nextUpdate = 1;
@@ -10,7 +10,7 @@ namespace GameSaver.Component
 
         private void Start () {
             _animator = GetComponentInChildren<Animator>();
-            _play = (int) _animator.GetCurrentAnimatorStateInfo(0).length * 2;
+            _play = (int) _animator.GetCurrentAnimatorStateInfo(0).length;
         }
 
         private void Update()

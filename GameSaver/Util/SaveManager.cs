@@ -8,7 +8,10 @@ using System.Text.RegularExpressions;
 using BepInEx;
 using GameSaver.Asset;
 using GameSaver.Component;
+using GameSaver.Menu;
 using Photon.Pun;
+using RWF;
+using RWF.UI;
 using Steamworks;
 using TMPro;
 using UnboundLib;
@@ -30,6 +33,7 @@ namespace GameSaver.Util
         private static Guid _gameGuid;
 
         public static List<GameInfoData> orderedGames => _games.OrderByDescending(game => game.gameData._serializedStartTime).ToList();
+
         public static List<GameInfoData> _games = new();
         private static SaveData _selectedSave;
 
@@ -43,8 +47,8 @@ namespace GameSaver.Util
 
         public static void LoadGames()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            // Stopwatch stopwatch = new Stopwatch();
+            // stopwatch.Start();
             foreach (var directoryPath in Directory.GetDirectories(SavesPath))
             {
                 if (!Directory.Exists(directoryPath)) continue;
@@ -56,7 +60,7 @@ namespace GameSaver.Util
                 GameData gameData = JsonUtility.FromJson<GameData>(gameContent);
                 // GameSaver.Instance.Log("Game found: " + gameData.startTime);
                 
-                List<SaveData> saves = (from filePath in Directory.GetFiles(directoryPath) 
+                var saves = (from filePath in Directory.GetFiles(directoryPath) 
                     where Path.GetFileName(filePath).Contains("save") 
                     select File.ReadAllText(filePath) into fileContent 
                     select JsonUtility.FromJson<SaveData>(fileContent)).ToList();
@@ -66,8 +70,8 @@ namespace GameSaver.Util
                 if (ContainsGame(game)) continue;
                 _games.Add(game);
             }
-            stopwatch.Stop();
-            GameSaver.Instance.Log($"Total games found: {_games.Count} in {stopwatch.ElapsedMilliseconds}ms");
+            // stopwatch.Stop();
+            // GameSaver.Instance.Log($"Total games found: {_games.Count} in {stopwatch.ElapsedMilliseconds}ms");
         }
 
         private static bool ContainsGame(GameInfoData gameInfoData)
@@ -117,7 +121,7 @@ namespace GameSaver.Util
                 var floatArray = Enumerable.Repeat(2f, cards.Count).ToArray();
                 ModdingUtils.Utils.Cards.instance.AddCardsToPlayer(player, cards.ToArray(), true, Enumerable.Repeat("", cards.Count).ToArray(), floatArray, floatArray, true);
                 // GameSaver.Instance.Log($"Added cards {cards.ToArray()}");
-                GameModeManager.CurrentHandler.SetTeamScore(player.teamID, new TeamScore(playerData.points, playerData.rounds));
+                // GameModeManager.CurrentHandler.SetTeamScore(player.teamID, new TeamScore(playerData.points, playerData.rounds));
                 // GameSaver.Instance.Log($"Set team points to {playerData.rounds} rounds and {playerData.points} points");
                 ShareSaveTeamSettings(player.teamID, playerData.points, playerData.rounds);
                 yield return null;
@@ -130,7 +134,7 @@ namespace GameSaver.Util
 
         public static void ShareSaveTeamSettings(int teamId, int points, int rounds)
         {
-            NetworkingManager.RPC_Others(typeof(SaveManager), nameof(LoadSaveTeamSettings), teamId, points, rounds);
+            NetworkingManager.RPC(typeof(SaveManager), nameof(LoadSaveTeamSettings), teamId, points, rounds);
         }
 
         public static void ShareSaveGameSettings(int pointsToWin, int pointsToWinRound)
@@ -142,6 +146,7 @@ namespace GameSaver.Util
         private static void LoadSaveTeamSettings(int teamId, int points, int rounds)
         {
             GameModeManager.CurrentHandler.SetTeamScore(teamId, new TeamScore(points, rounds));
+            UIHandler.instance.roundCounterSmall.InvokeMethod("ReDraw");
         }
 
         [UnboundRPC]
@@ -168,12 +173,23 @@ namespace GameSaver.Util
             yield return null;
         }
 
-        internal static void SelectSave(SaveData selectedSave)
+        internal static void SelectSave(GameData gameData, SaveData selectedSave)
         {
             _selectedSave = selectedSave;
+            GameModeManager.SetGameMode(gameData.gameMode);
+            PrivateRoomHandler.instance.UnreadyAllPlayers();
+            PrivateRoomHandler.instance.StartCoroutine(PrivateRoomHandler.instance.SyncMethodCoroutine(nameof(PrivateRoomHandler.SetGameSettings), null, GameModeManager.CurrentHandlerID, GameModeManager.CurrentHandler.Settings));
+            PrivateRoomHandler.instance.HandleTeamRules();
+            SaveLoadMenu.instance.Close();
         }
 
-        internal static IEnumerator RoundCounter(IGameModeHandler gm)
+        internal static IEnumerator RoundStart(IGameModeHandler gm)
+        {
+            _savingObject.SetActive(false);
+            yield return null;
+        }
+
+        internal static IEnumerator RoundEnd(IGameModeHandler gm)
         {
             _round += 1;
             yield return null;
@@ -189,7 +205,7 @@ namespace GameSaver.Util
 
         internal static IEnumerator PickEnd(IGameModeHandler gm)
         {
-            GameSaver.Instance.Log("Hook pick end");
+            // GameSaver.Instance.Log("Hook pick end");
             // if (!ConfigController.GameSaverSave) yield return null;
             // if (!ConfigController.GameSaverSaveAsHost) yield return null;
             
@@ -218,50 +234,40 @@ namespace GameSaver.Util
 
         internal static IEnumerator Save(SaveType saveType)
         {
-            // GameSaver.Instance.Log("Starting save");
             _savingObject.SetActive(true);
+            _savingObject.GetOrAddComponent<AnimationAutoDestroy>();
             yield return null;
 
-            List<string> playersData = new List<string>();
+            var playersData = new List<string>();
             int i = 1;
-            foreach (Player player in PlayerManager.instance.players)
+            foreach (var playerData in 
+                     from player in PlayerManager.instance.players 
+                     where player != null 
+                     let name = PhotonNetwork.OfflineMode || PhotonNetwork.CurrentRoom is null ? SteamFriends.GetPersonaName() + "-" + i : PhotonNetwork.CurrentRoom.GetPlayer(player.data.view.OwnerActorNr).NickName 
+                     let colorId = player.colorID() 
+                     let cards = new List<CardInfo>(player.data.currentCards) 
+                     let teamScore = GameModeManager.CurrentHandler.GetTeamScore(player.teamID) 
+                     let points = teamScore.points 
+                     let rounds = teamScore.rounds 
+                     let host = player.data.view.IsMine 
+                     let steamId = SteamManager.steamIds.ContainsKey(player.data.view.OwnerActorNr) ? SteamManager.steamIds[player.data.view.OwnerActorNr] : 1 
+                     select new PlayerData(name, colorId, cards, points, rounds, host, steamId))
             {
-                if (player == null) continue;
-                string name = PhotonNetwork.OfflineMode || PhotonNetwork.CurrentRoom is null ? SteamFriends.GetPersonaName() + "-" + i : PhotonNetwork.CurrentRoom.GetPlayer(player.data.view.OwnerActorNr).NickName;
-                // GameSaver.Instance.Log($"Name: {name}");
-                int colorId = player.colorID();
-                // GameSaver.Instance.Log($"Color: {colorId}");
-                List<CardInfo> cards = new(player.data.currentCards);
-                // GameSaver.Instance.Log($"Cards: {cards.Count}");
-                var teamScore = GameModeManager.CurrentHandler.GetTeamScore(player.teamID);
-                // GameSaver.Instance.Log($"Score: {teamScore}");
-                int points = teamScore.points;
-                // GameSaver.Instance.Log($"Points: {points}");
-                int rounds = teamScore.rounds;
-                // GameSaver.Instance.Log($"Rounds: {rounds}");
-                bool host = player.data.view.IsMine;
-                // GameSaver.Instance.Log($"Host: {host}");
-                ulong steamId = SteamManager.steamIds.ContainsKey(player.data.view.OwnerActorNr) ? SteamManager.steamIds[player.data.view.OwnerActorNr] : 1;// SteamUser.GetSteamID().m_SteamID;
-
-                PlayerData playerData = new PlayerData(name, colorId, cards, points, rounds, host, steamId);
-                // GameSaver.Instance.Log($"Player data: {playerData}");
                 playersData.Add(JsonUtility.ToJson(playerData));
                 i++;
             }
-            // GameSaver.Instance.Log($"Player save part finished");
             int pointsToWinRound = (int) GameModeManager.CurrentHandler.Settings["pointsToWinRound"];
             int roundsToWin = (int) GameModeManager.CurrentHandler.Settings["roundsToWinGame"];
-            // GameSaver.Instance.Log($"Win rounds: {roundsToWin}");
             SaveData saveData = new SaveData(DateTime.Now, saveType, _round, pointsToWinRound, roundsToWin, playersData);
-            // GameSaver.Instance.Log($"Save data: {saveData}");
             string jsonSave = JsonUtility.ToJson(saveData, true);
             string fileName = "save" + DateTime.Now.ToBinary() + ".json";
 
             File.WriteAllText(Path.Combine(_gameSavesPath, fileName), jsonSave);
-            // GameSaver.Instance.Log("Saved: " + jsonSave);
             yield return null;
 
-            _savingObject.AddComponent<AutoHide>();
+            // var autoHide = _savingObject.GetComponent<AutoHide>();
+            // if (autoHide != null) Object.Destroy(autoHide);
+
             yield return null;
         }
 

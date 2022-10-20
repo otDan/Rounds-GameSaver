@@ -15,8 +15,12 @@ namespace GameSaver.Menu
 {
     internal class SaveLoadMenu : MonoBehaviour
     {
+        public static SaveLoadMenu instance;
+
         public GameObject lobbyUi;
         public ListMenuButton listMenuButton;
+
+        private bool open = false;
 
         private GameObject _linksUi;
         private GameObject _pingUi;
@@ -29,6 +33,8 @@ namespace GameSaver.Menu
 
         private void Start()
         {
+            instance = this;
+
             gameObject.GetComponent<RectTransform>().localScale = Vector3.one;
             gameObject.GetComponent<Canvas>().worldCamera = Camera.main;
 
@@ -44,7 +50,7 @@ namespace GameSaver.Menu
                 else
                 {
                     if (_selectedText != null) _selectedText.text = "";
-                    SaveManager.SelectSave(_selectedSave);
+                    SaveManager.SelectSave(_selectedGame.gameData, _selectedSave);
                     _selectedText = _selectedSave.loaded;
                     _selectedSave.loaded.text = "LOADED";
                     loadText.text = "LOADED";
@@ -53,27 +59,17 @@ namespace GameSaver.Menu
             });
 
             GameObject backButton = gameObject.transform.Find("BackButton").gameObject;
-            backButton.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                GameSaver.Instance.StartCoroutine(Swoop(lobbyUi, 0, -Screen.height * 2, true));
-                GameSaver.Instance.StartCoroutine(Swoop(gameObject, 0, Screen.height * 2, false));
-                
-                _linksUi?.gameObject.SetActive(true);
-                _pingUi?.gameObject.SetActive(true);
-                _codeUi?.gameObject.SetActive(true);
-                _timerUi?.gameObject.SetActive(true);
-                gameObject.SetActive(false);
-            });
+            backButton.GetComponent<Button>().onClick.AddListener(Close);
 
             gameObject.SetActive(false);
         }
 
         public void Open()
         {
-            _linksUi = GameObject.Find("Links(Clone)");
-            _pingUi = GameObject.Find("UIHolder");
-            _codeUi = GameObject.Find("LobbyImprovementsBG");
-            _timerUi = GameObject.Find("TimerLobbyUI");
+            _linksUi ??= GameObject.Find("Links(Clone)");
+            _pingUi ??= GameObject.Find("UIHolder");
+            _codeUi ??= GameObject.Find("LobbyImprovementsBG");
+            _timerUi ??= GameObject.Find("TimerLobbyUI(Clone)");
             _linksUi?.gameObject.SetActive(false);
             _pingUi?.gameObject.SetActive(false);
             _codeUi?.gameObject.SetActive(false);
@@ -87,6 +83,22 @@ namespace GameSaver.Menu
                 SaveManager.LoadGames();
                 GameSaver.Instance.StartCoroutine(LoadButtons());
             }));
+
+            open = true;
+        }
+
+        public void Close()
+        {
+            if (!open) return;
+
+            GameSaver.Instance.StartCoroutine(Swoop(lobbyUi, 0, -Screen.height * 2, true));
+            GameSaver.Instance.StartCoroutine(Swoop(gameObject, 0, Screen.height * 2, false));
+                
+            _linksUi?.gameObject.SetActive(true);
+            _pingUi?.gameObject.SetActive(true);
+            _codeUi?.gameObject.SetActive(true);
+            _timerUi?.gameObject.SetActive(true);
+            gameObject.SetActive(false);
         }
         
         private IEnumerator LoadButtons()
@@ -122,12 +134,9 @@ namespace GameSaver.Menu
 
                             var roundButton = Instantiate(AssetManager.RoundButton, roundButtonContainer.transform);
                             var text = $"{saveData.time}".Split(' ');
-                            roundButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
-                                $"{text[0]}\n{text[1]}";
-                            roundButton.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text =
-                                $"ROUND {saveData.round}";
-                            roundButton.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = Regex
-                                .Replace(saveData.saveType.ToString(), "([a-z])_?([A-Z])", "$1\n$2").ToUpper();
+                            roundButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{text[0]}\n{text[1]}";
+                            roundButton.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = $"ROUND {saveData.round}";
+                            roundButton.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = Regex.Replace(saveData.saveType.ToString(), "([a-z])_?([A-Z])", "$1\n$2").ToUpper();
                             
                             foreach (var playerData in saveData.players.Where(playerData => playerData != null))
                             {
@@ -291,40 +300,30 @@ namespace GameSaver.Menu
 
         private void DisableGameButtons()
         {
-            foreach (var gameInfoData in SaveManager.orderedGames)
+            foreach (var gameInfoData in SaveManager.orderedGames.Where(gameInfoData => gameInfoData.gameData.button != null))
             {
-                if (gameInfoData.gameData.button == null) continue;
                 gameInfoData.gameData.button.SetActive(false);
             }
         }
 
         private static void DisableRoundButtons()
         {
-            foreach (var gameInfoData in SaveManager.orderedGames)
+            foreach (var saveData in from gameInfoData in SaveManager.orderedGames where gameInfoData.gameData.button != null from saveData in gameInfoData.gameSaves where saveData.button != null select saveData)
             {
-                if (gameInfoData.gameData.button == null) continue;
-                foreach (var saveData in gameInfoData.gameSaves)
-                {
-                    if (saveData.button == null) continue;
-                    saveData.button.SetActive(false);
-                }
+                saveData.button.SetActive(false);
             }
         }
 
         private static void DisablePlayerAssets()
         {
-            foreach (var gameInfoData in SaveManager.orderedGames)
+            foreach (var saveData in SaveManager.orderedGames.Where(gameInfoData => gameInfoData.gameData.button != null).SelectMany(gameInfoData => gameInfoData.gameSaves))
             {
-                if (gameInfoData.gameData.button == null) continue;
-                foreach (var saveData in gameInfoData.gameSaves)
+                if (saveData.display != null) saveData.display.SetActive(false);
+                if (saveData.button == null) continue;
+                foreach (var playerData in saveData.players)
                 {
-                    if (saveData.display != null) saveData.display.SetActive(false);
-                    if (saveData.button == null) continue;
-                    foreach (var playerData in saveData.players)
-                    {
-                        if (playerData.display == null) continue;
-                        playerData.display.SetActive(false);
-                    }
+                    if (playerData.display == null) continue;
+                    playerData.display.SetActive(false);
                 }
             }
         }

@@ -15,7 +15,7 @@ namespace GameSaver
     {
         private const string ModId = "ot.dan.rounds.gamesaver";
         private const string ModName = "Game Saver";
-        public const string Version = "1.0.3";
+        public const string Version = "1.0.4";
         public const string ModInitials = "";
         private const string CompatibilityModName = "GameSaver";
         public static GameSaver Instance { get; private set; }
@@ -35,7 +35,8 @@ namespace GameSaver
         {
             GameModeManager.AddHook(GameModeHooks.HookGameStart, SaveManager.GameStart);
             GameModeManager.AddHook(GameModeHooks.HookGameEnd, SaveManager.GameEnd);
-            GameModeManager.AddHook(GameModeHooks.HookRoundEnd, SaveManager.RoundCounter);
+            GameModeManager.AddHook(GameModeHooks.HookRoundStart, SaveManager.RoundStart);
+            GameModeManager.AddHook(GameModeHooks.HookRoundEnd, SaveManager.RoundEnd);
             GameModeManager.AddHook(GameModeHooks.HookPickStart, SaveManager.PickStart);
             GameModeManager.AddHook(GameModeHooks.HookPickEnd, SaveManager.PickEnd);
 
