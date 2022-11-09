@@ -11,7 +11,9 @@ Tired of people leaving and having your games crash? This is the solution for yo
 
 ## Versions
 - 1.0.4
-  - Set gamemode of the save when you load it
+  - Set gamemode of the save when you load it and unready all players
+  - Speed up the save loading menu a lot by creating only the ui parts at the needed time
+  - Some other thing that I probably forgot about
 - 1.0.3
   - Added steam id loading and saving animation
 - 1.0.2

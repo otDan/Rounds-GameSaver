@@ -1,10 +1,9 @@
 ﻿using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace GameSaver.Component
+namespace GameSaver.Component;
+
+internal class CustomScrollRect : ScrollRect
 {
-    internal class CustomScrollRect : ScrollRect
-    {
-        public override void OnScroll(PointerEventData eventData) { }
-    }
+    public override void OnScroll(PointerEventData eventData) { }
 }

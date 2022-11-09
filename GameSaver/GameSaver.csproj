@@ -75,8 +75,11 @@
     <Reference Include="PickNCards">
       <HintPath>C:\Users\Daniel\AppData\Roaming\r2modmanPlus-local\ROUNDS\profiles\ModdedTesting\BepInEx\plugins\Pykess-Pick_N_Cards\PickNCards.dll</HintPath>
     </Reference>
+    <Reference Include="RoundsWithFriends">
+      <HintPath>C:\Users\Daniel\AppData\Roaming\r2modmanPlus-local\ROUNDS\profiles\ModdedTesting\BepInEx\plugins\olavim-RoundsWithFriends\RoundsWithFriends.dll</HintPath>
+    </Reference>
     <Reference Include="RoundsWithFriends-nstrip">
-      <HintPath>C:\Users\Daniel\AppData\Roaming\r2modmanPlus-local\ROUNDS\profiles\ModdedTesting\BepInEx\plugins\olavim-RoundsWithFriends\RoundsWithFriends-nstrip.dll</HintPath>
+      <HintPath>C:\Users\Daniel\AppData\Roaming\r2modmanPlus-local\ROUNDS\lib\RoundsWithFriends-nstrip.dll</HintPath>
     </Reference>
     <Reference Include="SonigonAudioEngine.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
