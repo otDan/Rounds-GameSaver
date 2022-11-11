@@ -9,6 +9,13 @@ internal class SteamManager
 
     public static Player GetPlayerFromSteamId(ulong steamId)
     {
-        return PlayerManager.instance.players.FirstOrDefault(player => steamIds[player.data.view.OwnerActorNr] == steamId);
+        foreach (var player in PlayerManager.instance.players)
+        {
+            if (!steamIds.ContainsKey(player.data.view.OwnerActorNr)) continue;
+            if (steamIds[player.data.view.OwnerActorNr] != steamId) continue;
+            return player;
+        }
+
+        return null;
     }
 }

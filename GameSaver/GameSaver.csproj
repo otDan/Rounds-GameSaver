@@ -135,7 +135,7 @@
   <ItemGroup>
     <Compile Include="Asset\AssetManager.cs" />
     <Compile Include="Component\AnimationAutoDestroy.cs" />
-    <Compile Include="Component\CustomScrollRect.cs" />
+    <Compile Include="Component\MenuButtonHoverMono.cs" />
     <Compile Include="GameSaver.cs" />
     <Compile Include="Menu\SaveLoadMenu.cs" />
     <Compile Include="Component\CardDisplayMono.cs" />

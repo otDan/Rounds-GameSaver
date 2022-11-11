@@ -22,7 +22,7 @@ using Object = UnityEngine.Object;
 
 namespace GameSaver.Util;
 
-internal class SaveManager
+public class SaveManager
 {
     private static readonly string SavesPath = Path.Combine(Paths.ConfigPath, "Saves");
     private static string _gameSavesPath;
@@ -33,7 +33,7 @@ internal class SaveManager
     public static List<GameInfoData> orderedGames => _games.OrderByDescending(game => game.gameData._serializedStartTime).ToList();
 
     public static List<GameInfoData> _games = new();
-    private static SaveData _selectedSave;
+    public static SaveData _selectedSave;
 
     private static GameObject _savingObject;
 
@@ -60,7 +60,7 @@ internal class SaveManager
                 select File.ReadAllText(filePath) into fileContent 
                 select JsonUtility.FromJson<SaveData>(fileContent)).ToList();
 
-            GameInfoData game = new GameInfoData(gameData, saves);
+            GameInfoData game = new GameInfoData(gameInfoPath, gameData, saves);
             if (ContainsGame(game)) continue;
             _games.Add(game);
         }
@@ -94,19 +94,23 @@ internal class SaveManager
     {
         if (_selectedSave == null) yield break;
         _round = _selectedSave.round;
+
+        ShareSaveGameSettings(_selectedSave.pointsToWin, _selectedSave.pointsToWinRound);
+        yield return null;
+
         foreach (var playerData in _selectedSave.players)
         {
+            // Find the player from the save
             var player = SteamManager.GetPlayerFromSteamId(playerData.steamId);
             if (player == null) 
                 player = PlayerManager.instance.players.Find(loopPlayer => PhotonNetwork.CurrentRoom.GetPlayer(loopPlayer.data.view.OwnerActorNr).NickName == playerData.name);
             if (player == null) continue;
+
             var cards = playerData.Cards;
             ModdingUtils.Utils.Cards.instance.AddCardsToPlayer(player, cards.ToArray(), true, null, null, null, true);
             ShareSaveTeamSettings(player.teamID, playerData.points, playerData.rounds);
             yield return null;
         }
-            
-        ShareSaveGameSettings(_selectedSave.pointsToWin, _selectedSave.pointsToWinRound);
         _selectedSave = null;
     }
 
@@ -117,13 +121,14 @@ internal class SaveManager
 
     public static void ShareSaveGameSettings(int pointsToWin, int pointsToWinRound)
     {
-        NetworkingManager.RPC_Others(typeof(SaveManager), nameof(LoadSaveGameSettings), pointsToWin, pointsToWinRound, _round);
+        NetworkingManager.RPC(typeof(SaveManager), nameof(LoadSaveGameSettings), pointsToWin, pointsToWinRound, _round);
     }
 
     [UnboundRPC]
     private static void LoadSaveTeamSettings(int teamId, int points, int rounds)
     {
         GameModeManager.CurrentHandler.SetTeamScore(teamId, new TeamScore(points, rounds));
+        UIHandler.instance.roundCounter.InvokeMethod("ReDraw");
         UIHandler.instance.roundCounterSmall.InvokeMethod("ReDraw");
     }
 
@@ -137,6 +142,8 @@ internal class SaveManager
 
     internal static IEnumerator GameStart(IGameModeHandler gm)
     {
+        if (SaveLoadMenu.instance != null)
+            SaveLoadMenu.instance.Reset();
         SteamManager.steamIds = new Dictionary<int, ulong>();
         _savingObject = Object.Instantiate(AssetManager.Saving);
         _round = 1;
@@ -219,8 +226,16 @@ internal class SaveManager
         yield return null;
     }
 
+    public static void DeleteGameSave(GameInfoData gameInfoData)
+    {
+        SaveLoadMenu.instance.RemoveGameSaveButtons(gameInfoData);
+        File.Delete(gameInfoData.FilePath);
+    }
+
     public class GameInfoData
     {
+        public string FilePath { get; }
+
         public GameData gameData;
         public List<SaveData> gameSaves;
         private int _rounds = -1;
@@ -237,8 +252,9 @@ internal class SaveManager
             }
         }
 
-        public GameInfoData(GameData gameData, List<SaveData> gameSaves)
+        public GameInfoData(string filePath, GameData gameData, List<SaveData> gameSaves)
         {
+            FilePath = filePath;
             this.gameData = gameData;
             this.gameSaves = gameSaves;
         }

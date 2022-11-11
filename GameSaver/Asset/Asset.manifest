@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 95523115
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: gamesaver_assets
+      Dependencies: {}

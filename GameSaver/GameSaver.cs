@@ -15,12 +15,12 @@ public class GameSaver : BaseUnityPlugin
 {
     private const string ModId = "ot.dan.rounds.gamesaver";
     private const string ModName = "Game Saver";
-    public const string Version = "2.0.4";
+    public const string Version = "1.0.6";
     public const string ModInitials = "GS";
     private const string CompatibilityModName = "GameSaver";
     public static GameSaver Instance { get; private set; }
 
-    private void Awake()
+    internal void Awake()
     {
         Instance = this;
 
@@ -30,9 +30,9 @@ public class GameSaver : BaseUnityPlugin
         SaveManager.Initialize();
     }
 
-    private void Start()
+    internal void Start()
     {
-        GameModeManager.AddHook(GameModeHooks.HookGameStart, SaveManager.GameStart);
+        GameModeManager.AddHook(GameModeHooks.HookGameStart, SaveManager.GameStart, 0);
         GameModeManager.AddHook(GameModeHooks.HookGameEnd, SaveManager.GameEnd);
         GameModeManager.AddHook(GameModeHooks.HookRoundStart, SaveManager.RoundStart);
         GameModeManager.AddHook(GameModeHooks.HookRoundEnd, SaveManager.RoundEnd);

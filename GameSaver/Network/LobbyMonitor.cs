@@ -12,18 +12,13 @@ namespace GameSaver.Network;
 
 public class LobbyMonitor : MonoBehaviourPunCallbacks
 {
-    public static LobbyMonitor instance { get; private set; }
+    public static LobbyMonitor Instance { get; private set; }
     private static bool _enabled;
 
     private void Awake()
     {
-        instance = this;
+        Instance = this;
     }
-
-    // private void Update()
-    // {
-    //     if (!_enabled) return;
-    // }
 
     public override void OnCreatedRoom() { }
 
@@ -41,6 +36,8 @@ public class LobbyMonitor : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         _enabled = false;
+        if (SaveLoadMenu.instance == null) return;
+        SaveLoadMenu.instance.Reset();
     }
 
     public static void SendSteamId(int player, ulong steamId)
@@ -77,14 +74,11 @@ public class LobbyMonitor : MonoBehaviourPunCallbacks
         loadSaveLayout.minHeight = 92;
         var backListButton = loadSaveObject.AddComponent<ListMenuButton>();
         backListButton.setBarHeight = 92f;
-            
-            
+
         var saveMenuAsset = Instantiate(AssetManager.ElementSection);
         var saveLoadMenu = saveMenuAsset.AddComponent<SaveLoadMenu>();
         saveLoadMenu.lobbyUi = lobbyMenu;
         saveLoadMenu.listMenuButton = backListButton;
-            
-        // menuManager.Init();
 
         var loadSaveButton = loadSaveObject.AddComponent<Button>();
         loadSaveButton.onClick.AddListener(() => { saveLoadMenu.Open(); });
@@ -103,7 +97,7 @@ public class LobbyMonitor : MonoBehaviourPunCallbacks
         var text = textGo.AddComponent<TextMeshProUGUI>();
         text.text = str;
         text.color = new Color32(230, 230, 230, 255);
-        text.font = menuFont;
+        text.font = MenuFont;
         text.fontSize = 60;
         text.fontWeight = FontWeight.Regular;
         text.alignment = TextAlignmentOptions.Center;
@@ -113,7 +107,7 @@ public class LobbyMonitor : MonoBehaviourPunCallbacks
     }
 
     private static TMP_FontAsset _menuFont;
-    public static TMP_FontAsset menuFont
+    public static TMP_FontAsset MenuFont
     {
         get
         {
