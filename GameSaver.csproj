@@ -1,0 +1,150 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup Label="Globals">
+	  <ProjectGuid>b8e42624-b106-4352-b23a-e8ae97bd817d</ProjectGuid>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<ProjectGuid>{2F32C3B2-635E-40DE-869E-6BC48A85989E}</ProjectGuid>
+		<OutputType>Library</OutputType>
+		<Description>A ROUNDS template for an easy start mod project.</Description>
+		<Authors>otDan</Authors>
+		<TargetFramework>net481</TargetFramework>
+		<FileAlignment>512</FileAlignment>
+		<Deterministic>true</Deterministic>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<TargetFrameworkProfile />
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<RoundsFolder>E:\Games\Steam\steamapps\common\ROUNDS</RoundsFolder>
+		<ManagedFolder>$(RoundsFolder)\Rounds_Data\Managed</ManagedFolder>
+		<BepinExFolder>C:\Users\Daniel\AppData\Roaming\r2modmanPlus-local\ROUNDS</BepinExFolder>
+		<CoreFolder>$(BepinExFolder)\profiles\ModdedTesting\BepInEx\core</CoreFolder>
+		<PluginFolder>$(BepinExFolder)\profiles\ModdedTesting\BepInEx\plugins</PluginFolder>
+		<IndirectBuildTask>true</IndirectBuildTask>
+		<DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+		<LangVersion>latest</LangVersion>
+		<Company></Company>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove=".template.config\**" />
+	  <Compile Remove="release\out\**" />
+	  <EmbeddedResource Remove=".template.config\**" />
+	  <EmbeddedResource Remove="release\out\**" />
+	  <None Remove=".template.config\**" />
+	  <None Remove="release\out\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Asset\Asset" />
+	  <None Remove="Asset\Asset.manifest" />
+	  <None Remove="Asset\gamesaver_assets" />
+	  <None Remove="Asset\gamesaver_assets.manifest" />
+	  <None Remove="release\GameSaver.dll" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Asset\gamesaver_assets" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="0Harmony">
+		  <HintPath>$(CoreFolder)\0Harmony.dll</HintPath>
+		</Reference>
+		<Reference Include="BepInEx">
+		  <HintPath>$(CoreFolder)\BepInEx.dll</HintPath>
+		</Reference>
+		<Reference Include="MMHOOK_Assembly-CSharp">
+		  <HintPath>$(PluginFolder)\willis81808-MMHook\MMHOOK_Assembly-CSharp.dll</HintPath>
+		</Reference>
+		<Reference Include="ModdingUtils">
+		  <HintPath>$(PluginFolder)\Pykess-ModdingUtils\ModdingUtils.dll</HintPath>
+		</Reference>
+		<Reference Include="RoundsWithFriends">
+			<HintPath>$(PluginFolder)\olavim-RoundsWithFriends\RoundsWithFriends.dll</HintPath>
+		</Reference>
+		<Reference Include="RoundsWithFriends">
+		  <HintPath>$(BepinExFolder)\lib\RoundsWithFriends-nstrip.dll</HintPath>
+		</Reference>
+		<Reference Include="System.IO.Compression" />
+		<Reference Include="System.Net.Http" />
+		<Reference Include="UnboundLib">
+		  <HintPath>$(PluginFolder)\willis81808-UnboundLib\UnboundLib.dll</HintPath>
+		</Reference>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(ManagedFolder)\Assembly-CSharp.dll</HintPath>
+		</Reference>
+		<Reference Include="Assembly-CSharp-firstpass">
+			<HintPath>$(ManagedFolder)\Assembly-CSharp-firstpass.dll</HintPath>
+		</Reference>
+		<Reference Include="Photon3Unity3D">
+			<HintPath>$(ManagedFolder)\Photon3Unity3D.dll</HintPath>
+		</Reference>
+		<Reference Include="PhotonUnityNetworking">
+			<HintPath>$(ManagedFolder)\PhotonUnityNetworking.dll</HintPath>
+		</Reference>
+		<Reference Include="PhotonRealtime">
+			<HintPath>$(ManagedFolder)\PhotonRealtime.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.TextMeshPro">
+		  <HintPath>$(ManagedFolder)\Unity.TextMeshPro.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine">
+		  <HintPath>$(ManagedFolder)\UnityEngine.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.AnimationModule">
+			<HintPath>$(ManagedFolder)\UnityEngine.AnimationModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.AssetBundleModule">
+		  <HintPath>$(ManagedFolder)\UnityEngine.AssetBundleModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+		  <HintPath>$(ManagedFolder)\UnityEngine.CoreModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.JSONSerializeModule">
+			<HintPath>$(ManagedFolder)\UnityEngine.JSONSerializeModule.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.Networking">
+			<HintPath>$(ManagedFolder)\UnityEngine.Networking.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UI">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ManagedFolder)\UnityEngine.UI.dll</HintPath>
+		</Reference>
+		<Reference Include="UnityEngine.UIModule">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ManagedFolder)\UnityEngine.UIModule.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<Target Name="ReadPackageVersionFromOutputAssembly" DependsOnTargets="Build" Outputs="$(PackageVersion)">
+		<GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+			<Output TaskParameter="Assemblies" ItemName="PackAssembly" />
+		</GetAssemblyIdentity>
+		<PropertyGroup>
+			<PackageVersion>%(PackAssembly.Version)</PackageVersion>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="PostBuildTaskWin" DependsOnTargets="Build" AfterTargets="Build">
+		<CallTarget Targets="ReadPackageVersionFromOutputAssembly">
+			<Output TaskParameter="TargetOutputs" PropertyName="PackageVersion" />
+		</CallTarget>
+		<Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)\Release\publish.ps1&quot; -Version &quot;$(PackageVersion.Remove($(PackageVersion.LastIndexOf('.')), 2))&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ProjectPath &quot;$(SolutionDir.TrimEnd('\'))&quot;" />
+	</Target>
+
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties />
+		</VisualStudio>
+	</ProjectExtensions>
+	
+</Project>

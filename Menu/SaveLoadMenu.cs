@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using GameSaver.Asset;
 using GameSaver.Component;
 using GameSaver.Util;
+using GameSaver.Util.Web;
 using TMPro;
 using UnboundLib;
 using UnboundLib.GameModes;
@@ -19,6 +20,11 @@ namespace GameSaver.Menu;
 internal class SaveLoadMenu : MonoBehaviour
 {
     public static SaveLoadMenu instance;
+
+    public Camera gameCamera;
+
+    private Canvas canvas;
+    private CanvasGroup canvasGroup;
 
     public GameObject lobbyUi;
     public ListMenuButton listMenuButton;
@@ -39,15 +45,21 @@ internal class SaveLoadMenu : MonoBehaviour
 
     private List<Coroutine> menuCoroutines = new();
 
+    private TextMeshProUGUI savedGamesText;
+    private int lastGameCount = -1;
+
     private void Start()
     {
         instance = this;
+        gameCamera = Camera.main;
         deleteObject = Instantiate(AssetManager.Delete, transform);
 
         gameObject.GetComponent<RectTransform>().localScale = Vector3.one;
-        gameObject.GetComponent<Canvas>().worldCamera = Camera.main;
+        canvas = gameObject.GetComponent<Canvas>();
+        canvas.worldCamera = gameCamera;
+        canvasGroup = gameObject.GetComponent<CanvasGroup>();
 
-        GameObject loadButton = gameObject.transform.Find("LoadButton").gameObject;
+        GameObject loadButton = gameObject.transform.Find("Buttons/LoadButton").gameObject;
         loadButton.GetComponent<Button>().onClick.AddListener(() =>
         {
             var loadText = loadButton.transform.GetComponentInChildren<TextMeshProUGUI>();
@@ -83,10 +95,81 @@ internal class SaveLoadMenu : MonoBehaviour
             }
         });
 
-        GameObject backButton = gameObject.transform.Find("BackButton").gameObject;
+        GameObject backButton = gameObject.transform.Find("Buttons/BackButton").gameObject;
         backButton.GetComponent<Button>().onClick.AddListener(Close);
 
-        gameObject.SetActive(false);
+        var uiExportImport = transform.GetChild(4);
+        var uiExportImportCanvas = uiExportImport.GetComponent<Canvas>();
+
+        var spinner = uiExportImport.GetChild(4).gameObject;
+
+        var uiExport = uiExportImport.GetChild(2);
+        var uiExportCanvas = uiExport.GetComponent<Canvas>();
+        var uiExportText = uiExport.GetComponentInChildren<TMP_InputField>();
+        var uiExportButton = uiExport.GetComponentInChildren<Button>();
+        uiExportButton.onClick.AddListener(() =>
+        {
+            spinner.SetActive(true);
+            GameSaver.Instance.StartCoroutine(WebManager.SendSaves(uiExportText, spinner));
+        });
+
+        var uiImport = uiExportImport.GetChild(3);
+        var uiImportCanvas = uiImport.GetComponent<Canvas>();
+        var uiImportText = uiImport.GetComponentInChildren<TMP_InputField>();
+        var uiImportButton = uiImport.GetComponentInChildren<Button>();
+        uiImportButton.onClick.AddListener(() =>
+        {
+            var placeholderText = uiImportText.placeholder.GetComponent<TextMeshProUGUI>();
+            var initialColor = placeholderText.color;
+            var errorColor = new Color(255, 0, 0, 0.65f);
+            
+            var useText = uiImportText.text;
+            uiImportText.text = "";
+
+            useText = useText.Replace(" ", "");
+            if (useText.Length != 5)
+            {
+                
+                placeholderText.color = errorColor;
+                placeholderText.text = "INVALID CODE";
+                this.ExecuteAfterSeconds(1, () =>
+                {
+                    placeholderText.color = initialColor;
+                    placeholderText.text = "CODE HERE...";
+
+                });
+                return;
+            }
+
+            spinner.SetActive(true);
+            uiImportText.interactable = false;
+            GameSaver.Instance.StartCoroutine(WebManager.GetSaves(uiExportImportCanvas, uiImportText, useText, spinner, placeholderText, initialColor, errorColor));
+        });
+
+        var topBarTransform = transform.GetChild(0);
+
+        var exportButtonContainer = topBarTransform.GetChild(0);
+        var exportButton = exportButtonContainer.GetComponent<Button>();
+        exportButton.onClick.AddListener(() =>
+        {
+            uiExportImportCanvas.enabled = true;
+            uiImportCanvas.enabled = false;
+            uiExportCanvas.enabled = true;
+        });
+
+        var importButtonContainer = topBarTransform.GetChild(1);
+        var importButton = importButtonContainer.GetComponent<Button>();
+        importButton.onClick.AddListener(() =>
+        {
+            uiExportImportCanvas.enabled = true;
+            uiExportCanvas.enabled = false;
+            uiImportCanvas.enabled = true;
+        });
+
+        var savedGamesDisplay = transform.GetChild(3).GetChild(0);
+        savedGamesText = savedGamesDisplay.GetComponentInChildren<TextMeshProUGUI>();
+
+        Active(false);
     }
 
     public void Open()
@@ -96,17 +179,18 @@ internal class SaveLoadMenu : MonoBehaviour
         _codeUi ??= GameObject.Find("LobbyImprovementsBG");
         _timerUi ??= GameObject.Find("TimerLobbyUI(Clone)");
         _roundUi ??= GameObject.Find("RoundCounterSmall");
-        _linksUi?.gameObject.SetActive(false);
-        _pingUi?.gameObject.SetActive(false);
-        _codeUi?.gameObject.SetActive(false);
-        _timerUi?.gameObject.SetActive(false);
-        _roundUi?.gameObject.SetActive(false);
+
+        if (_linksUi) _linksUi.gameObject.SetActive(false);
+        if (_pingUi) _pingUi.gameObject.SetActive(false);
+        if (_codeUi) _codeUi.gameObject.SetActive(false);
+        if (_timerUi) _timerUi.gameObject.SetActive(false);
+        if (_roundUi) _roundUi.gameObject.SetActive(false);
 
         GameSaver.Instance.StartCoroutine(Swoop(lobbyUi, 0, Screen.height * 2, true));
         GameSaver.Instance.StartCoroutine(Swoop(gameObject, 0, -Screen.height * 2, false, () =>
         {
             listMenuButton.OnPointerEnter(null);
-            gameObject.SetActive(true);
+            Active(true);
             LoadGames();
             menuCoroutines.Add(GameSaver.Instance.StartCoroutine(LoadButtons()));
         }));
@@ -119,28 +203,29 @@ internal class SaveLoadMenu : MonoBehaviour
         if (!open) return;
         foreach (var menuCoroutine in menuCoroutines)
         {
-            StopCoroutine(menuCoroutine);
+            GameSaver.Instance.StopCoroutine(menuCoroutine);
         }
 
         GameSaver.Instance.StartCoroutine(Swoop(lobbyUi, 0, -Screen.height * 2, true));
         GameSaver.Instance.StartCoroutine(Swoop(gameObject, 0, Screen.height * 2, false));
-                
-        _linksUi?.gameObject.SetActive(true);
-        _pingUi?.gameObject.SetActive(true);
-        _codeUi?.gameObject.SetActive(true);
-        _timerUi?.gameObject.SetActive(true);
-        _roundUi?.gameObject.SetActive(true);
-        gameObject.SetActive(false);
+
+        if (_linksUi) _linksUi.gameObject.SetActive(true);
+        if (_pingUi) _pingUi.gameObject.SetActive(true);
+        if (_codeUi) _codeUi.gameObject.SetActive(true);
+        if (_timerUi) _timerUi.gameObject.SetActive(true);
+        if (_roundUi) _roundUi.gameObject.SetActive(true);
+
+        Active(false);
     }
 
     public void Reset()
     {
         foreach (var menuCoroutine in menuCoroutines)
         {
-            StopCoroutine(menuCoroutine);
+            GameSaver.Instance.StopCoroutine(menuCoroutine);
         }
-
         menuCoroutines = new List<Coroutine>();
+
         foreach (var gameInfoData in orderedGames.Where(gameInfoData => gameInfoData != null))
         {
             RemoveGameSaveButtons(gameInfoData);
@@ -169,6 +254,18 @@ internal class SaveLoadMenu : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (_games.Count != lastGameCount)
+            UpdateGamesCount(_games.Count);
+    }
+
+    public void UpdateGamesCount(int amount)
+    {
+        savedGamesText.text = $"SAVED GAMES: {amount}";
+        lastGameCount = amount;
+    }
+
     private IEnumerator LoadSaveDataUi(SaveData saveData, Transform playerContainer)
     {
         foreach (var playerData in saveData.players.Where(playerData => playerData != null))
@@ -185,22 +282,22 @@ internal class SaveLoadMenu : MonoBehaviour
                 var cardContainer = cardScrollView.transform.GetChild(0).GetChild(0);
                 foreach (var card in playerData.Cards)
                 {
+                    var cardAsset = Instantiate(AssetManager.Card, cardContainer);
                     if (card)
                     {
-                        var cardAsset = Instantiate(AssetManager.Card, cardContainer);
                         cardAsset.transform.GetComponentInChildren<TextMeshProUGUI>().text = CardInitials(card);
                         cardAsset.transform.GetComponent<Image>().color = playerData.Color.color;
-
-                        var displayMono = cardAsset.GetOrAddComponent<CardDisplayMono>();
-                        displayMono.container = playerAsset.transform;
-                        displayMono.card = card;
                     }
                     else
                     {
-                        var cardAsset = Instantiate(AssetManager.Card, cardContainer);
                         cardAsset.transform.GetComponentInChildren<TextMeshProUGUI>().text = "???";
                         cardAsset.transform.GetComponent<Image>().color = playerData.Color.color;
                     }
+
+                    var displayMono = cardAsset.GetOrAddComponent<CardDisplayMono>();
+                    displayMono.container = playerAsset.transform;
+                    displayMono.card = card;
+                    displayMono.color = playerData.Color.color;
                 }
 
                 var pointContainer = playerAsset.transform.GetChild(3);
@@ -288,10 +385,16 @@ internal class SaveLoadMenu : MonoBehaviour
 
     private IEnumerator LoadButtons()
     {
-        var gameButtonContainer = transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0);
-        var roundButtonContainer = transform.GetChild(0).GetChild(1).GetChild(0).GetChild(0).GetChild(0).GetChild(0);
-        var roundDisplayContainer = transform.GetChild(0).GetChild(1).GetChild(0).GetChild(1).GetChild(0);
-        var playerContainer = transform.GetChild(0).GetChild(1).GetChild(0).GetChild(1).GetChild(0).GetChild(0).GetChild(0);
+        var genericSection = transform.GetChild(1);
+        var gameButtonContainer = genericSection.GetChild(0).GetChild(0).GetChild(0);
+
+        var displaySection = genericSection.GetChild(1);
+        var scrollViewSection = displaySection.GetChild(0);
+        var roundButtonContainer = scrollViewSection.GetChild(0).GetChild(0).GetChild(0);
+        
+        var section = scrollViewSection.GetChild(1);
+        var roundDisplayContainer = section.GetChild(0);
+        var playerContainer = section.GetChild(0).GetChild(0).GetChild(0);
 
         foreach (var gameInfoData in orderedGames.Where(gameInfoData => gameInfoData != null))
         {
@@ -303,13 +406,11 @@ internal class SaveLoadMenu : MonoBehaviour
             }
 
             var gameButton = Instantiate(AssetManager.GameButton, gameButtonContainer);
-            // MenuButtonHoverMono menuButtonHoverMono = gameButton.AddComponent<MenuButtonHoverMono>();
-            // menuButtonHoverMono.gameInfoData = gameInfoData;
 
             var gameButtonTransform = gameButton.transform;
             var text = $"{gameInfoData.gameData.StartTime}".Split(' ');
             gameButtonTransform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{text[1]} {text[0]}";
-            gameButtonTransform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = $"ROUND\n{gameInfoData.rounds}";
+            gameButtonTransform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = gameInfoData.rounds.ToString();
             gameButtonTransform.GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>().text = $"{gameInfoData.gameData.playerAmount}/32";
             gameButtonTransform.GetChild(3).GetComponent<TextMeshProUGUI>().text = gameInfoData.gameData.gameMode.ToUpper();
 
@@ -419,5 +520,11 @@ internal class SaveLoadMenu : MonoBehaviour
             yield return null;
         }
         onFinished?.Invoke();
+    }
+
+    private void Active(bool active)
+    {
+        canvas.enabled = active;
+        canvasGroup.blocksRaycasts = active;
     }
 }

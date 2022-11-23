@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4052475800
+CRC: 460017773
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 7d210ecf4aa660252ffafbd4af6b320a
+    Hash: 124efa2c1777c5c90ed893860f133fb2
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 12a44ca3f890cf1c848d9a06d890349f
+    Hash: bb2b9c559e027d28b8e23841bcec62b3
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -38,11 +38,15 @@ ClassTypes:
 - Class: 114
   Script: {fileID: -1200242548, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
+  Script: {fileID: -146154839, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
   Script: {fileID: -2061169968, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
   Script: {fileID: 1367256648, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
   Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
 - Class: 114
@@ -59,17 +63,21 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 224
   Script: {instanceID: 0}
+- Class: 225
+  Script: {instanceID: 0}
 Assets:
+- Assets/UI/CardPreview.prefab
 - Assets/UI/Player.prefab
 - Assets/UI/SaveInfo.prefab
 - Assets/Image/TrashOpen.png
+- Assets/UI/Saving.prefab
 - Assets/UI/Section.prefab
 - Assets/UI/RoundButton.prefab
 - Assets/UI/GameButton.prefab
 - Assets/UI/ElementSection.prefab
 - Assets/UI/Delete.prefab
 - Assets/UI/Card.prefab
-- Assets/UI/Saving.prefab
+- Assets/UI/SavingOld.prefab
 - Assets/Image/Trash.png
 - Assets/UI/Point.prefab
 Dependencies: []

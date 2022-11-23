@@ -19,6 +19,8 @@ public static class AssetManager
     public static readonly GameObject Card = GameSaverAssetsBundle.LoadAsset<GameObject>("Card");
     public static readonly GameObject Point = GameSaverAssetsBundle.LoadAsset<GameObject>("Point");
 
+    public static readonly GameObject CardPreview = GameSaverAssetsBundle.LoadAsset<GameObject>("CardPreview");
+
     public static readonly GameObject Delete = GameSaverAssetsBundle.LoadAsset<GameObject>("Delete");
     public static readonly Image Trash = GameSaverAssetsBundle.LoadAsset<Image>("Trash");
     public static readonly Image TrashOpen = GameSaverAssetsBundle.LoadAsset<Image>("TrashOpen");

@@ -15,7 +15,7 @@ public class GameSaver : BaseUnityPlugin
 {
     private const string ModId = "ot.dan.rounds.gamesaver";
     private const string ModName = "Game Saver";
-    public const string Version = "1.0.6";
+    public const string Version = "1.0.7";
     public const string ModInitials = "GS";
     private const string CompatibilityModName = "GameSaver";
     public static GameSaver Instance { get; private set; }

@@ -24,7 +24,7 @@ namespace GameSaver.Util;
 
 public class SaveManager
 {
-    private static readonly string SavesPath = Path.Combine(Paths.ConfigPath, "Saves");
+    public static readonly string SavesPath = Path.Combine(Paths.ConfigPath, "Saves");
     private static string _gameSavesPath;
 
     private static int _round;
@@ -41,6 +41,11 @@ public class SaveManager
     {
         Directory.CreateDirectory(SavesPath);
         LoadGames();
+    }
+
+    public static void LoadGames(int selectedGame, int selectedRound)
+    {
+
     }
 
     public static void LoadGames()
@@ -228,6 +233,7 @@ public class SaveManager
 
     public static void DeleteGameSave(GameInfoData gameInfoData)
     {
+        _games.Remove(gameInfoData);
         SaveLoadMenu.instance.RemoveGameSaveButtons(gameInfoData);
         File.Delete(gameInfoData.FilePath);
     }
