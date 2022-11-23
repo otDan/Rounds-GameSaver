@@ -1,4 +1,4 @@
-<img align="right" src="https://github.com/otDan/GameSaver/blob/master/GameSaver/icon-full.png?raw=true" 
+<img align="right" src="https://github.com/otDan/GameSaver/blob/master/release/icon-full.png?raw=true" 
 height="155" 
 style="vertical-align:middle; 
 margin:-15px 25px"/>
