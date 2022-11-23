@@ -391,9 +391,6 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
-PlayerMarkers/bin
-GameSaver/Asset/Asset
+*.manifest
 
-GameSaver/Asset/Asset.manifest
-
-GameSaver/Asset/gamesaver_assets.manifest
+!release

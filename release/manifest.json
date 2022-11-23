@@ -1,0 +1,11 @@
+{
+  "name": "GameSaver",
+  "version_number": "#VERSION#",
+  "website_url": "https://github.com/otDan/GameSaver",
+  "description": "#DESCRIPTION#",
+  "dependencies": [
+    "BepInEx-BepInExPack_ROUNDS-5.4.1900",
+    "willis81808-UnboundLib-3.1.2",
+    "willis81808-MMHook-1.0.0"
+  ]
+}
