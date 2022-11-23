@@ -11,12 +11,17 @@
 
 - Thunderstore: 
   - https://rounds.thunderstore.io/package/otDan/GameSaver 
+
+<a href="https://github.com/otDan/GameSaver/releases">
+    <img align="right" src="https://badgen.net/github/assets-dl/otDan/GameSaver?icon=git&color=blue" hspace="50"/>
+</a>
+
 - Manual: 
   - https://github.com/otDan/GameSaver/releases
     
 ## Example
 <p align="center"> 
-    <img src="https://i.imgur.com/FdMd1ib.png" height="350"/>
+    <img src="https://i.imgur.com/FdMd1ib.png" height="350" style="object-fit:scale-down;"/>
 </p>
 
 ## Versions
