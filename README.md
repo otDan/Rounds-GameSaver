@@ -1,4 +1,4 @@
-<img align="right" src="https://github.com/otDan/GameSaver/blob/master/release/icon-full.png?raw=true" height="180" />
+<img align="right" src="https://github.com/otDan/GameSaver/blob/master/release/icon-full.png?raw=true" height="190" hspace="20"/>
 
 # GameSaver for [ROUNDS](https://store.steampowered.com/app/1557740/ROUNDS/)
 #DESCRIPTION#
@@ -6,7 +6,7 @@
 ## Installation
 
 <a href="https://rounds.thunderstore.io/package/otDan/GameSaver">
-    <img align="right" src="https://badgen.net/https/git-hub-badge-data.npkn.net/thunderstore-downloads-request/GameSaver?icon=https://gcdn.thunderstore.io/static/ts/thunderstore-logomark-white.svg"/>
+    <img align="right" src="https://badgen.net/https/git-hub-badge-data.npkn.net/thunderstore-downloads-request/GameSaver?icon=https://gcdn.thunderstore.io/static/ts/thunderstore-logomark-white.svg" hspace="50"/>
 </a>
 
 - Thunderstore: 
