@@ -1,15 +1,15 @@
-<p align="right"> 
-    <img align="right" src="https://github.com/otDan/GameSaver/blob/master/release/icon-full.png?raw=true" height="180" />
-</p>
+<img align="right" src="https://github.com/otDan/GameSaver/blob/master/release/icon-full.png?raw=true" height="180" />
 
 # GameSaver for [ROUNDS](https://store.steampowered.com/app/1557740/ROUNDS/)
 #DESCRIPTION#
 
 ## Installation
-- Thunderstore: 
+
 <a href="https://rounds.thunderstore.io/package/otDan/GameSaver">
-    <img src="https://badgen.net/https/git-hub-badge-data.npkn.net/thunderstore-downloads-request/GameSaver?icon=https://gcdn.thunderstore.io/static/ts/thunderstore-logomark-white.svg"/>
+    <img align="right" src="https://badgen.net/https/git-hub-badge-data.npkn.net/thunderstore-downloads-request/GameSaver?icon=https://gcdn.thunderstore.io/static/ts/thunderstore-logomark-white.svg"/>
 </a>
+
+- Thunderstore: 
   - https://rounds.thunderstore.io/package/otDan/GameSaver 
 - Manual: 
   - https://github.com/otDan/GameSaver/releases
@@ -50,9 +50,7 @@
 
 <p align="left"> 
     <a href="https://www.paypal.com/paypalme/otdan">
-        <img align="right" src="https://raw.githubusercontent.com/aha999/DonateButtons/master/Paypal.png" 
-        height="65" 
-        style="margin:-15px 25px"/>
+        <img align="right" src="https://raw.githubusercontent.com/aha999/DonateButtons/master/Paypal.png" height="65"/>
     </a>
 </p>
 
